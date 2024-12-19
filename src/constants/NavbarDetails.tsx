@@ -4,7 +4,7 @@ export const NavElementDetails = [
     url: "/",
   },
   {
-    text: "Report Issued",
+    text: "Report Issues",
     url: "/report",
   },
   {
