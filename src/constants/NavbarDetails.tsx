@@ -12,7 +12,7 @@ export const NavElementDetails = [
     url: "/dashboard",
   },
   {
-    text: "leaderboard",
+    text: "Leaderboard",
     url: "/leaderboard",
   },
 ];
