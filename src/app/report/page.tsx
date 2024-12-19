@@ -27,10 +27,9 @@ export default function ReportIsse() {
   // fetchShops();
   useEffect(() => {
     fetchReports();
-    console.log(reportDetails);
-  }, []);
+  });
 
-  async function updateReportUser(currentSlug: Number) {
+  async function updateReportUser(currentSlug: number) {
     const currentUser = await session?.user?.email;
 
     try {
