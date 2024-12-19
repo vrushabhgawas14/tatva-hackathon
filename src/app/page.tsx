@@ -1,101 +1,100 @@
-import Image from "next/image";
+"use client";
+import Button from "@/components/Button";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [error, setError] = useState("");
+  const { data: session } = useSession();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const description = formData.get("description");
+      const location = formData.get("location");
+      const reporterEmailID = session?.user?.email?.toString();
+      console.log(reporterEmailID);
+
+      const res = await fetch("api/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description,
+          location,
+          reporterEmailID,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 201) {
+        // All Ok
+        await setError(data.message);
+      }
+
+      if (res.status === 400 || res.status === 500) {
+        // Some Error
+        await setError(data.message);
+      }
+      // eslint-disable-next-line
+    } catch (err: any) {
+      // Something might went wrong with fetching json or else.
+      setError("Error := " + err.message);
+    }
+  };
+
+  return (
+    <main>
+      <section className="p-10 text-black">
+        {session ? (
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col items-center space-y-4"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <div className="flex items-center justify-center font-semibold space-x-4">
+              <label htmlFor="description" className="text-xl cursor-pointer">
+                Description :
+              </label>
+              <input
+                id="description"
+                name="description"
+                type="text"
+                required
+                placeholder="Enter description"
+                className="px-2 py-1 rounded-xl text-teal-900 sm:w-40"
+              />
+            </div>
+            <div className="flex items-center justify-center font-semibold space-x-4 pb-2">
+              <label htmlFor="location" className="text-xl cursor-pointer">
+                Location :
+              </label>
+              <input
+                id="location"
+                name="location"
+                type="text"
+                required
+                placeholder="Enter location"
+                className="px-2 py-1 rounded-xl text-teal-900 sm:w-40"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-green-950 px-4 py-1 text-red-100 border-2 border-red-100 border-opacity-90 rounded-xl ease-in duration-200 hover:bg-teal-950"
+            >
+              Submit
+            </button>
+            {error && <div>{error}</div>}
+          </form>
+        ) : (
+          <div className="flex justify-center items-center">
+            <Button text="Please Login!" url="/login" />
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
