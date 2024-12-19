@@ -4,7 +4,7 @@ const userSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   isAdmin: { type: Boolean, default: false, required: false },
-  points: { type: Number, required: false },
+  points: { type: Number, default: 0, required: false },
   createdAt: { type: Date, default: Date.now },
 });
 

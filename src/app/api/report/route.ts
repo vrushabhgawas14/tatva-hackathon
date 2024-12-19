@@ -1,5 +1,6 @@
 import { connectToDatabase } from "@/lib/mongoDB";
 import { Report } from "@/models/Report";
+import { User } from "@/models/User";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
@@ -7,12 +8,22 @@ export const POST = async (request: NextRequest) => {
     const { description, location, reporterEmailID } = await request.json();
     await connectToDatabase();
 
-    // console.log(reporterEmailID);
+    const totalReports = await Report.find({});
+
     await Report.create({
       description: description,
       location: location,
       reporter: await reporterEmailID,
+      slug: totalReports.length.toString(),
     });
+
+    const earlierPoints = await User.findOne({ email: reporterEmailID });
+    const newPoints = earlierPoints.points + 5;
+
+    await User.updateOne(
+      { email: reporterEmailID },
+      { $set: { points: newPoints } }
+    );
 
     // await newReport.save();
     return NextResponse.json(

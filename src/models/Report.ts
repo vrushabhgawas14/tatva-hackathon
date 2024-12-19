@@ -9,10 +9,12 @@ const reportSchema = new Schema({
     type: Date,
     default: () => {
       const currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() + 2);
+      currentDate.setDate(currentDate.getDay() + 2);
       return currentDate;
     },
   },
+  joinedPeople: [{ type: String }],
+  slug: { type: String, required: false },
 });
 
 export const Report =

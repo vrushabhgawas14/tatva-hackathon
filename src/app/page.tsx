@@ -55,6 +55,9 @@ export default function Home() {
             onSubmit={handleSubmit}
             className="flex flex-col items-center space-y-4"
           >
+            <div className="text-2xl sm:text-xl text-center pb-6">
+              Submit Issue in your surrounding.
+            </div>
             <div className="flex items-center justify-center font-semibold space-x-4">
               <label htmlFor="description" className="text-xl cursor-pointer">
                 Description :
